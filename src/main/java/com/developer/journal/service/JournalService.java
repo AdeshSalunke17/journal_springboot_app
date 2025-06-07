@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,12 +22,13 @@ public class JournalService {
         return journalRepository.findAll();
     }
 
-    public ResponseEntity<Journal> saveJournal(Journal journal) {
+    public Journal saveJournal(Journal journal) {
         if(journal.getTitle().trim().equals("") || journal.getDescription().trim().equals("") || journal.getTitle() == null || journal.getDescription() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return null;
         }
-         journalRepository.save(journal);
-         return new ResponseEntity<Journal>(journal, HttpStatus.CREATED);
+        journal.setCreateDate(LocalDateTime.now());
+        journal.setUpdateDate(LocalDateTime.now());
+        return journalRepository.save(journal);
     }
 
     public Journal getParticularJournal(ObjectId id) {
