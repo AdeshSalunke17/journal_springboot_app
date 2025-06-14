@@ -36,32 +36,13 @@ public class JournalController {
 
     @PostMapping("/{userId}")
     public ResponseEntity<Journal> addJournal(@RequestBody Journal journal, @PathVariable ObjectId userId) {
-        User user = null;
-        Journal savedJournal = null;
-        // first adding journal to db
         try {
-            savedJournal = journalService.saveJournal(journal);
+            Journal savedJournal = journalService.saveJournal(journal, userId);
+            return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
         } catch (Exception exception) {
+            System.out.println(exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        // second adding in user
-        try {
-            if(savedJournal != null) {
-                user = userService.findUser(userId);
-                if(user != null) {
-                    user.getJournalList().add(journal);
-                    userService.saveUser(user);
-                    return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
-                } else {
-                    new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
-                }
-            } else {
-                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception exception) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 //    @GetMapping("/{id}")
@@ -75,37 +56,27 @@ public class JournalController {
 //    }
 //
     @DeleteMapping
-    public boolean deleteJournal(@RequestParam ObjectId userId , @RequestParam ObjectId journalId) {
-        boolean journalResult = false;
+    public ResponseEntity<Boolean> deleteJournal(@RequestParam ObjectId userId , @RequestParam ObjectId journalId) {
         try {
-            // delete from journal db
-            journalResult = journalService.deleteJournal(journalId);
-            if(journalResult) {
-                // delete from users db
-                User user = userService.findUser(userId);
-                if(user != null) {
-                    user.getJournalList().removeIf(journal -> journal.getId() == journalId);
-                    userService.saveUser(user);
-                    return true;
-                }
-            }
+            boolean result =  journalService.deleteJournal(journalId, userId);
+            return new ResponseEntity<Boolean>(result, HttpStatus.OK);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return false;
     }
 //
     @PutMapping("/{userId}")
-    public ResponseEntity<Journal> updateJournal(@PathVariable ObjectId userId, @RequestBody Journal newJournal) {
+    public ResponseEntity<Journal> updateJournal(@RequestBody Journal newJournal) {
+        Journal updatedJournal = null;
         try {
             Journal journalFromDb = journalService.getParticularJournal(newJournal.getId());
             if(journalFromDb != null) {
                 journalFromDb.setTitle(newJournal.getTitle());
                 journalFromDb.setDescription(newJournal.getDescription());
                 journalFromDb.setUpdateDate(LocalDateTime.now());
-                journalService.saveJournal(journalFromDb);
+                updatedJournal = journalService.saveUpdatedJournal(journalFromDb);
             }
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(updatedJournal,HttpStatus.OK);
         } catch (Exception exception ) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

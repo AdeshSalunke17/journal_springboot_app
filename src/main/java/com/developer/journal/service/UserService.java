@@ -4,6 +4,7 @@ import com.developer.journal.entity.User;
 import com.developer.journal.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,17 +35,18 @@ public class UserService {
 
     public User updateUser(User user, String userName) {
         User userInDb = findByName(userName);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if(userInDb != null) {
             userInDb.setUserName(user.getUserName());
-            userInDb.setPassword(user.getPassword());
+            userInDb.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             return userRepository.save(userInDb);
         }
         return null;
     }
 
-    public boolean deleteUser(ObjectId id) {
+    public boolean deleteUser(String userName) {
         try {
-            userRepository.deleteById(id);
+            userRepository.deleteByUserName(userName);
             return true;
         } catch (Exception exception) {
             return false;

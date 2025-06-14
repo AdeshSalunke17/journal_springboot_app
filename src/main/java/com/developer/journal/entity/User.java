@@ -15,6 +15,15 @@ public class User {
     private  String password;
     @DBRef
     private List<Journal> journalList = new ArrayList<>();
+    private List<String> roles;
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 
     public ObjectId getId() {
         return id;
