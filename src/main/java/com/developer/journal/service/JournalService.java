@@ -24,7 +24,7 @@ public class JournalService {
         return journalRepository.findAll();
     }
     @Transactional
-    public Journal saveJournal(Journal journal, ObjectId userId) {
+    public Journal saveJournal(Journal journal, User user) {
         // saving in journals db
         if(journal.getTitle().trim().equals("") || journal.getDescription().trim().equals("") || journal.getTitle() == null || journal.getDescription() == null) {
             return null;
@@ -34,7 +34,6 @@ public class JournalService {
         Journal savedJournal = journalRepository.save(journal);
         // saving in user db
             if(savedJournal != null) {
-                User user = userService.findUser(userId);
                 if(user != null) {
                     user.getJournalList().add(journal);
                     userService.saveUser(user);
@@ -53,9 +52,8 @@ public class JournalService {
     }
 
     @Transactional
-    public boolean deleteJournal(ObjectId id, ObjectId userId) {
+    public boolean deleteJournal(ObjectId id, User user) {
         journalRepository.deleteById(id);
-        User user = userService.findUser(userId);
         if(user != null) {
             user.getJournalList().removeIf(journal -> journal.getId() == id);
             userService.saveUser(user);
