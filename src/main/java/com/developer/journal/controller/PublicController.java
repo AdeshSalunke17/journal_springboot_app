@@ -1,6 +1,8 @@
 package com.developer.journal.controller;
 
 import com.developer.journal.entity.User;
+import com.developer.journal.responsehandler.Pet;
+import com.developer.journal.service.PetService;
 import com.developer.journal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ import java.util.Arrays;
 public class PublicController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PetService petService;
 
     @PostMapping("/create-user")
     public ResponseEntity<User> createUser(@RequestBody User user, @RequestParam String role) {
@@ -31,5 +36,8 @@ public class PublicController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
+    @GetMapping("/getpets/{status}")
+    public Pet[] getPetsByStatus(@PathVariable String status) {
+        return petService.getPetsByStatus(status);
+    }
 }
