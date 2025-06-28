@@ -45,9 +45,8 @@ public class JournalController {
         User user = userService.findByName(userName);
         if(user != null) {
             try {
-                throw new RuntimeException();
-               //Journal savedJournal = journalService.saveJournal(journal, user);
-               //return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
+               Journal savedJournal = journalService.saveJournal(journal, user);
+               return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
             } catch (Exception exception) {
                 LOGGER.error("Error occured while saving journal {}", journal.getTitle(), exception);
                 System.out.println(exception);
