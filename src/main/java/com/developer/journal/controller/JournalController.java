@@ -9,6 +9,8 @@ import com.developer.journal.entity.User;
 import com.developer.journal.service.JournalService;
 import com.developer.journal.service.UserService;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class JournalController {
     private JournalService journalService;
     @Autowired
     private UserService userService;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(JournalController.class);
     @GetMapping
     public ResponseEntity<List<Journal>> getJournals() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -43,9 +45,11 @@ public class JournalController {
         User user = userService.findByName(userName);
         if(user != null) {
             try {
-                Journal savedJournal = journalService.saveJournal(journal, user);
-                return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
+                throw new RuntimeException();
+               //Journal savedJournal = journalService.saveJournal(journal, user);
+               //return new ResponseEntity<Journal>(savedJournal, HttpStatus.CREATED);
             } catch (Exception exception) {
+                LOGGER.error("Error occured while saving journal {}", journal.getTitle(), exception);
                 System.out.println(exception);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
