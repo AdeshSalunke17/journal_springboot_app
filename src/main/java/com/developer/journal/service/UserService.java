@@ -4,6 +4,9 @@ import com.developer.journal.entity.User;
 import com.developer.journal.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public User saveUser(User user) {
         return userRepository.save(user);
@@ -39,6 +44,8 @@ public class UserService {
         if(userInDb != null) {
             userInDb.setUserName(user.getUserName());
             userInDb.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userInDb.setEmail(user.getEmail());
+            userInDb.setSentimentAnalysis(user.getSentimentAnalysis());
             return userRepository.save(userInDb);
         }
         return null;
@@ -51,5 +58,16 @@ public class UserService {
         } catch (Exception exception) {
             return false;
         }
+    }
+
+    public List<User> getAllUserWithEmailAndSentimentAnalysis() {
+        Query query = new Query();
+        query.addCriteria(new Criteria().andOperator(
+                Criteria.where("email").exists(true).ne(null).ne("")
+                        .regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"),
+                Criteria.where("sentimentAnalysis").exists(true).is(true)
+        ));
+        List<User> list = mongoTemplate.find(query, User.class);
+        return list;
     }
 }

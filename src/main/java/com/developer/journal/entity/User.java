@@ -16,6 +16,24 @@ public class User {
     @DBRef
     private List<Journal> journalList = new ArrayList<>();
     private List<String> roles;
+    private String email;
+    private boolean sentimentAnalysis;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean getSentimentAnalysis() {
+        return sentimentAnalysis;
+    }
+
+    public void setSentimentAnalysis(boolean sentimentAnalysis) {
+        this.sentimentAnalysis = sentimentAnalysis;
+    }
 
     public List<String> getRoles() {
         return roles;

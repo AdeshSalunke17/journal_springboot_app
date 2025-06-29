@@ -26,4 +26,14 @@ public class AdminController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/sentiment-users")
+    public ResponseEntity<?> getAllSentimentUsers() {
+        List<User> allUser = userService.getAllUserWithEmailAndSentimentAnalysis();
+        if(!allUser.isEmpty()) {
+            return new ResponseEntity<>(allUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }
