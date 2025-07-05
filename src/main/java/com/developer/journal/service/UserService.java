@@ -42,7 +42,7 @@ public class UserService {
         User userInDb = findByName(userName);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if(userInDb != null) {
-            userInDb.setUserName(user.getUserName());
+            userInDb.setUserName(user.getUsername());
             userInDb.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userInDb.setEmail(user.getEmail());
             userInDb.setSentimentAnalysis(user.getSentimentAnalysis());

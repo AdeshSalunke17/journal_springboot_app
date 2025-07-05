@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.stream.Collectors;
+
 @Configuration
 public class UserConfig implements UserDetailsService {
     @Autowired
@@ -31,9 +33,9 @@ public class UserConfig implements UserDetailsService {
 
         return org.springframework.security.core.userdetails.User
                 .builder()
-                .username(user.getUserName())
+                .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRoles().toArray(new String[0]))
+                .roles(user.getRoles().stream().map(role -> role.getValue()).collect(Collectors.toList()).toArray(new String[0]))
                 .build();
     }
 }

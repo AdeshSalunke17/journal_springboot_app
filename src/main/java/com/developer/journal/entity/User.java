@@ -1,21 +1,24 @@
 package com.developer.journal.entity;
 
+import com.developer.journal.constant.Role;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
 @Document(collection = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     private ObjectId id;
     private String userName;
     private  String password;
     @DBRef
     private List<Journal> journalList = new ArrayList<>();
-    private List<String> roles;
+    private List<Role> roles;
     private String email;
     private boolean sentimentAnalysis;
 
@@ -35,11 +38,11 @@ public class User {
         this.sentimentAnalysis = sentimentAnalysis;
     }
 
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
@@ -49,10 +52,6 @@ public class User {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     public void setUserName(String userName) {
@@ -73,5 +72,33 @@ public class User {
 
     public void setJournalList(List<Journal> journalList) {
         this.journalList = journalList;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
     }
 }
